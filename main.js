@@ -3,11 +3,9 @@ class Point {
         this.x = x;
         this.y = y;
     }
-
     hash() {
         return `Point(${this.x},${this.y})`;
     }
-
 }
 
 class Line {
@@ -100,19 +98,21 @@ function getRad(deg) {
     return (deg * Math.PI) / 180;
 }
 
+function colorOnCenter(coord) {
+    hexagons[coord.hash()].color = turn ? 'red' : 'blue';
+    drawHexagon(coord.x, coord.y, 40, turn ? 'red' : 'blue');
+    turn = !turn;
+}
 
 function handleMouseClick(e) {
     for(const coord of centerCoords) {
         poly = hexagons[coord.hash()].points;
         if(hexagons[coord.hash()].color == 'white' && checkInside(poly, new Point(e.clientX - offsetX, e.clientY - offsetY))) {
-            hexagons[coord.hash()].color = turn ? 'red' : 'blue';
-            drawHexagon(coord.x, coord.y, 40, turn ? 'red' : 'blue');
-            turn = !turn;
+            colorOnCenter(coord)
             break;
         }
     }
 }
-
 
 //(a, b) is center of hexagon
 //len: length of apothem
@@ -124,17 +124,16 @@ function drawHexagon(a, b, len, val) {
     p5 = new Point(a, b - 2 * len * Math.tan(getRad(30)));
     p6 = new Point(a - len, b - len * Math.tan(getRad(30)));
 
-    if(centerCoords.length != row * col) {
+    if(centerCoords.length != rows * cols) {
+        p0 = new Point(a, b);
         let tmp = {
             color: 'white',
             points: [p1, p2, p3, p4, p5, p6]
         };
-    
-        p0 = new Point(a, b);
         centerCoords.push(p0);
         hexagons[p0.hash()] = tmp;
-        
     }
+
     ctx.fillStyle = val;
     ctx.beginPath(); 
     ctx.moveTo(a - len, b + len * Math.tan(getRad(30)));
@@ -146,28 +145,203 @@ function drawHexagon(a, b, len, val) {
     ctx.lineTo(a - len, b + len * Math.tan(getRad(30)));
     ctx.closePath();
     ctx.stroke();
-    ctx.fill();
-
-    
+    ctx.fill();    
 }
 
 baseX = 260
 baseY = 140
 len = 40
-row = 11
-col = 11
+rows = 11
+cols = 11
 turn = true;
 
+const grid = new Array(rows);
+
 function drawAll(val) {
-    for(let j = 0; j < row; j++) {
-        for(let i = 0; i < col; i++) {
-            drawHexagon(baseX + len * j + 2 * len * i, baseY + len * j * Math.sqrt(3), len, val);   
+    for(let j = 0; j < rows; j++) {
+        grid[j] = new Array(cols);
+        for(let i = 0; i < cols; i++) {
+            a = baseX + len * (j + 2 * i)
+            b = baseY + len * j * Math.sqrt(3)
+            grid[j][i] = new Point(a, b);
+            drawHexagon(a, b, len, val);   
         }
     }
 }
 
+function check(x, y) {
+    return x >= 0 && x < rows && y >= 0 && y < cols
+}
+
+function bfs(src, endCondition, color) {
+    var queue = src;
+    var visited = new Set([]);
+    src.forEach((node) => visited.add(node.toString()));
+    const dirs = [
+        [1, 0],
+        [-1, 0],
+        [-1, -1],
+        [-1, 1],
+        [1, -1],
+        [0, 1],
+        [0, -1]
+    ];
+    while (queue.length > 0) {
+        const cur = queue.shift();
+        if (endCondition(cur)) return true;
+        for (const dir of dirs) {
+            const coord = [cur[0] + dir[0], cur[1] + dir[1]];
+            if(!check(coord[0], coord[1])) continue;
+            var coordColor = hexagons[grid[coord[0]][coord[1]].hash()].color;
+            if(!visited.has(coord.toString()) && coordColor == color) {
+                queue.push(coord);
+                visited.add(coord.toString());
+            }
+        }
+    }
+    return false;
+}
+
+function checkA(x, y, color) {
+    return x >= 0 && x < rows && y >= 0 && y < cols && (hexagons[grid[x][y].hash()].color == color || hexagons[grid[x][y].hash()].color == 'white');
+}
+
+function countRemaining(color) {
+    var queue = [];
+    var dist = new Array(rows);
+    for(let i = 0; i < rows; i++) dist[i] = new Array(cols).fill(Infinity);
+
+    if(color == 'red') {
+        for(let i = 0; i < cols; i++) {
+            var col = hexagons[grid[0][i].hash()].color;
+            if(col == 'red') {
+                queue.unshift([0, i]);
+                dist[0][i] = 0;
+            } else {
+                queue.push([0, i]);
+                dist[0][i] = 1;
+            }
+        }
+    } else {
+        for(let i = 0; i < rows; i++) {
+            var col = hexagons[grid[i][0].hash()].color;
+            if(col == 'blue') {
+                queue.unshift([i, 0]);
+                dist[i][0] = 0;
+            } else {
+                queue.push([i, 0]);
+                dist[i][0] = 1;
+            }        
+        }
+    }
+    
+    const dirs = [
+        [1, 0],
+        [-1, 0],
+        [-1, -1],
+        [-1, 1],
+        [1, -1],
+        [0, 1],
+        [0, -1]
+    ];
+
+    while (queue.length > 0) {
+        const cur = queue.shift();
+        for(const dir of dirs) {
+            const coord = [cur[0] + dir[0], cur[1] + dir[1]];
+            if(!checkA(coord[0], coord[1], color)) continue;
+            var neighColor = hexagons[grid[coord[0]][coord[1]].hash()].color;
+            var weight = neighColor == color ? 0 : 1;
+            if(dist[cur[0]][cur[1]] + weight < dist[coord[0]][coord[1]]) {
+                dist[coord[0]][coord[1]] = dist[cur[0]][cur[1]] + weight;
+                if(weight == 1) {
+                    queue.push(coord);
+                } else {
+                    queue.unshift(coord);
+                }
+            }
+        }
+    }
+
+    var min = Infinity;
+    if(color == 'red') {
+        for(let i = 0; i < cols; i++) {
+            min = Math.min(min, dist[rows - 1][i]);
+        }
+    } else {
+        for(let i = 0; i < rows; i++) {
+            min = Math.min(min, dist[i][cols - 1]);
+        }
+    }
+
+    return min;
+}
+
+function checkIfEndGame() {
+    var srcRed = []
+    for(let i = 0; i < cols; i++) {
+        if(hexagons[grid[0][i].hash()].color == 'red') srcRed.push([0, i]);
+    }
+
+    var srcBlue = []
+    for(let i = 0; i < rows; i++) {
+        if(hexagons[grid[i][0].hash()].color == 'blue') srcBlue.push([i, 0]);
+    }
+
+    var player1 = bfs(srcRed, function endCondition(current) {
+        return current[0] == rows - 1;
+    }, 'red');
+
+    var player2 = bfs(srcBlue, function endCondition(current) {
+        return current[1] == cols - 1;
+    }, 'blue');
+
+    return player1 ? 1 : (player2 ? 2 : -1);
+}
+
+//red wants to minimize (human)
+//blue wants to maximize (computer)
+function getHeuristic() {
+    return countRemaining("red") - countRemaining("blue");
+}
+
+//player is actually the computer
+function minimax(depth, player) {
+    if(depth == 0) {
+        heur = getHeuristic();
+        return [-1, -1, heur];
+    }
+    var ans = player ? -Infinity : Infinity;
+    var posX, posY;
+    for(let i = 0; i < rows; i++) {
+        for(let j = 0; j < cols; j++) {
+            if(hexagons[grid[i][j].hash()].color == 'white') {
+                hexagons[grid[i][j].hash()].color = player ? 'blue' : 'red';
+                const [x, y, heur] = minimax(depth - 1, !player);
+                if((player && heur > ans) || (!player && heur < ans)) {
+                    posX = i, posY = j, ans = heur;
+                }
+                hexagons[grid[i][j].hash()].color = 'white';
+            }
+        }
+    }
+    return [posX, posY, ans];
+}
+
+function reset() {
+    drawAll('white');
+}
+
 $('#myCanvas').click(function(e) {
     handleMouseClick(e);
-});
+    const [posX, posY, ans] = minimax(1, true);
+    colorOnCenter(grid[posX][posY]);
+    var result = checkIfEndGame();
+    if (result != -1) {
+        alert(result.toString() + ' won!');
+        drawAll('white');
+    }
 
+});
 drawAll('white');
+ 
