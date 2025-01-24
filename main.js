@@ -17,10 +17,7 @@ class Line {
 
 function onLine(l1, p)
 {
-    if (p.x <= Math.max(l1.p1.x, l1.p2.x) 
-        && p.x <= Math.min(l1.p1.x, l1.p2.x) 
-        && (p.y <= Math.max(l1.p1.y, l1.p2.y) 
-        && p.y <= Math.min(l1.p1.y, l1.p2.y)))
+    if (p.x <= Math.max(l1.p1.x, l1.p2.x) && p.x <= Math.min(l1.p1.x, l1.p2.x) && (p.y <= Math.max(l1.p1.y, l1.p2.y) && p.y <= Math.min(l1.p1.y, l1.p2.y)))
         return true;
     return false;
 }
@@ -100,18 +97,21 @@ function getRad(deg) {
 
 function colorOnCenter(coord) {
     hexagons[coord.hash()].color = turn ? 'red' : 'blue';
-    drawHexagon(coord.x, coord.y, 40, turn ? 'red' : 'blue');
+    drawHexagon(coord.x, coord.y, len, turn ? 'red' : 'blue');
     turn = !turn;
 }
 
 function handleMouseClick(e) {
+    var co = $("#myCanvas").offset();
+
     for(const coord of centerCoords) {
         poly = hexagons[coord.hash()].points;
-        if(hexagons[coord.hash()].color == 'white' && checkInside(poly, new Point(e.clientX - offsetX, e.clientY - offsetY))) {
-            colorOnCenter(coord)
-            break;
+        if(checkInside(poly, new Point(e.clientX - co.left, e.clientY - co.top))) {
+            if(hexagons[coord.hash()].color == 'white') colorOnCenter(coord)
+            else return false;
         }
     }
+    return true;
 }
 
 //(a, b) is center of hexagon
@@ -148,9 +148,9 @@ function drawHexagon(a, b, len, val) {
     ctx.fill();    
 }
 
-baseX = 260
-baseY = 140
-len = 40
+baseX = 210
+baseY = 74
+len = 44
 rows = 11
 cols = 11
 turn = true;
@@ -333,13 +333,20 @@ function reset() {
 }
 
 $('#myCanvas').click(function(e) {
-    handleMouseClick(e);
-    const [posX, posY, ans] = minimax(1, true);
+    if(!handleMouseClick(e)) {
+        alert("Square already clicked. Try again.");
+        return;
+    }
+    const [posX, posY, ans] = minimax(2, true);
     colorOnCenter(grid[posX][posY]);
     var result = checkIfEndGame();
+    console.log(result);
     if (result != -1) {
-        alert(result.toString() + ' won!');
-        drawAll('white');
+        setTimeout(() => {
+            alert(result.toString() + ' won!');
+            drawAll('white');
+            window.location.reload();
+        }, 100);
     }
 
 });
