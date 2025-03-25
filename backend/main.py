@@ -19,7 +19,14 @@ def serve_index():
 def serve_static(path):
     return send_from_directory(app.static_folder, path)
 
-@app.route('/random', methods=['GET'])
+@app.route('/api/ping', methods = ['GET'])
+def ping():
+    return jsonify({
+        'status_code': 200,
+        'message': 'API works.'
+    })
+
+@app.route('/api/random', methods=['GET'])
 def random_play():
     grid_string = request.args.get('grid', default='none')
     grid = parse_grid_string(grid_string)
