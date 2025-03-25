@@ -1,6 +1,9 @@
 "use strict";
 import { HexagonGrid } from './draw.js';
 
+const DEV = process.env.DEV;
+const PROD = process.env.PROD;
+
 class GameEvent {
     constructor() {
         this.hexagonGrid = new HexagonGrid();
@@ -50,7 +53,8 @@ class GameEvent {
     async randomGenerate() {
         try {
             const gridString = this.hexagonGrid.toString();
-            const response = await fetch(`/random?grid=${encodeURIComponent(gridString)}`);
+            console.log(`${PROD}/random?grid=${encodeURIComponent(gridString)}`);
+            const response = await fetch(`${PROD}/random?grid=${encodeURIComponent(gridString)}`);
             const data = await response.json();
             return data.pair;
         } catch (error) {
