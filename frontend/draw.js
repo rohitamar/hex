@@ -1,9 +1,9 @@
 import { Point, GeoUtils } from './Geometry.js';
 
 export class HexagonGrid {
-    constructor() {
-        this.baseX = 210;
-        this.baseY = 74;
+    constructor(baseX, baseY) {
+        this.baseX = baseX;
+        this.baseY = baseY;
         this.len = 44;
         this.rows = 11;
         this.cols = 11;
@@ -24,8 +24,8 @@ export class HexagonGrid {
             for (let i = 0; i < this.cols; i++) {
                 const a = this.baseX + this.len * (j + 2 * i);
                 const b = this.baseY + this.len * j * Math.sqrt(3);
-                this.grid[j][i] = new Point(a, b);2
-                this.drawHexagon(a, b, this.len, val);
+                this.grid[j][i] = new Point(a, b);
+                this.drawHexagon(a, b, this.len, val, j, i);
             }
         }
     }
@@ -53,13 +53,24 @@ export class HexagonGrid {
         return s;
     }
 
-    drawHexagon(a, b, len, val) {
+    drawEdge(p1, p2, color, width) {
+        this.ctx.beginPath();
+        this.ctx.moveTo(p1.x, p1.y);
+        this.ctx.lineTo(p2.x, p2.y);
+        this.ctx.strokeStyle = color;
+        this.ctx.lineWidth = width;
+        this.ctx.stroke();
+        this.ctx.closePath();
+    }
+
+    drawHexagon(a, b, len, val, i, j) {
         const p1 = new Point(a - len, b + len * Math.tan(this.getRad(30)));
         const p2 = new Point(a, b + 2 * len * Math.tan(this.getRad(30)));
         const p3 = new Point(a + len, b + len * Math.tan(this.getRad(30)));
         const p4 = new Point(a + len, b - len * Math.tan(this.getRad(30)));
         const p5 = new Point(a, b - 2 * len * Math.tan(this.getRad(30)));
         const p6 = new Point(a - len, b - len * Math.tan(this.getRad(30)));
+
         if (this.centerCoords.length !== this.rows * this.cols) {
             const p0 = new Point(a, b);
             const hexagon = {
@@ -69,6 +80,7 @@ export class HexagonGrid {
             this.centerCoords.push(p0);
             this.hexagons[p0.hash()] = hexagon;
         }
+        
         this.ctx.fillStyle = val;
         this.ctx.beginPath();
         this.ctx.moveTo(a - len, b + len * Math.tan(this.getRad(30)));
@@ -78,9 +90,31 @@ export class HexagonGrid {
         this.ctx.lineTo(a, b - 2 * len * Math.tan(this.getRad(30)));
         this.ctx.lineTo(a - len, b - len * Math.tan(this.getRad(30)));
         this.ctx.lineTo(a - len, b + len * Math.tan(this.getRad(30)));
+        this.ctx.strokeStyle = 'black';
+        this.ctx.lineWidth = 1;
         this.ctx.closePath();
-        this.ctx.stroke();
         this.ctx.fill();
+        this.ctx.stroke();
+        
+        if(j == 0) {
+            if(i != this.rows - 1) this.drawEdge(p1, p2, 'blue', 5);
+            this.drawEdge(p6, p1, 'blue', 5);
+        }
+
+        if(i == 0) {
+            this.drawEdge(p4, p5, 'red', 5);
+            this.drawEdge(p5, p6, 'red', 5);
+        }
+
+        if(j == this.cols - 1) {
+            this.drawEdge(p3, p4, 'blue', 5);
+            if(i != 0) this.drawEdge(p4, p5, 'blue', 5);
+        }
+
+        if(i == this.rows - 1) {
+            this.drawEdge(p1, p2, 'red', 5);
+            this.drawEdge(p2, p3, 'red', 5);
+        }
     }
 
     findWhichHexagon(posX, posY) {

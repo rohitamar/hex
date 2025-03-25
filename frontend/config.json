@@ -1,0 +1,5 @@
+{
+    "DEV": "http://localhost:8080/api",
+    "PROD": "https://lx7y4kjoag.execute-api.us-east-1.amazonaws.com/hex/api",
+    "TYPE": "DEV"
+}
