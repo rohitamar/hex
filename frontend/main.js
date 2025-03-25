@@ -29,15 +29,12 @@ function direction(a, b, c)
  
     if (val == 0)
  
-        // Collinear
         return 0;
  
     else if (val < 0)
  
-        // Anti-clockwise direction
         return 2;
  
-    // Clockwise direction
     return 1;
 }
 
