@@ -1,0 +1,32 @@
+{
+  "hex": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-hex-hex-f0295-authRole",
+      "UnauthRoleArn": "arn:aws:iam::142065502600:role/amplify-hex-hex-f0295-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::142065502600:role/amplify-hex-hex-f0295-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-hex-hex-f0295-deployment",
+      "UnauthRoleName": "amplify-hex-hex-f0295-unauthRole",
+      "StackName": "amplify-hex-hex-f0295",
+      "StackId": "arn:aws:cloudformation:us-east-1:142065502600:stack/amplify-hex-hex-f0295/fd6acf30-0929-11f0-897a-0e0775607411",
+      "AmplifyAppId": "d1hjg2b0quixy"
+    },
+    "categories": {
+      "function": {
+        "rohitloveslamfuncs": {
+          "deploymentBucketName": "amplify-hex-hex-f0295-deployment",
+          "s3Key": "amplify-builds/rohitloveslamfuncs-5956346b78456b45674c-build.zip"
+        }
+      },
+      "api": {
+        "iloveapis": {}
+      },
+      "hosting": {
+        "amplifyhosting": {
+          "appId": "d1hjg2b0quixy",
+          "type": "manual"
+        }
+      }
+    }
+  }
+}
