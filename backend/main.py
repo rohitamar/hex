@@ -2,8 +2,10 @@ from flask import Flask, send_from_directory, jsonify, request
 from flask_cors import CORS
 import random 
 import time 
+import math 
 
-from utils import bfs, parse_grid_string
+from utils import parse_grid_string, check_endgame
+from minimax import minimax_alg 
 
 app = Flask(__name__, static_folder='../frontend') 
 CORS(app)
@@ -23,29 +25,39 @@ def route_ping():
         'message': 'API works.'
     })
 
-@app.route('/api/random', methods=['GET'])
-def route_random():
-    time.sleep(1)
-    grid_string = request.args.get('grid', default='none')
-    grid = parse_grid_string(grid_string)
-    coords = [[i, j] for i in range(len(grid)) for j in range(len(grid[0])) if grid[i][j] == "W"]
-    rand_coord = random.choice(coords)
-
-    return jsonify({
-        'pair': rand_coord,
-    })
-
 @app.route('/api/endgame', methods = ['GET'])
 def route_endgame():
-    pass 
+    grid_string = request.args.get('grid', default='none')
+    grid = parse_grid_string(grid_string)
 
-@app.route('/api/minimax', methods = ['GET'])
-def route_minimax():
-    pass 
+    end_state = check_endgame(grid)
+    
+    return jsonify({
+        'status_code': 200,
+        'end_state': end_state
+    })
+     
+@app.route('/api/makeMove', methods = ['GET'])
+def route_algo():
+    grid_string = request.args.get('grid', default=None)
+    grid = parse_grid_string(grid_string)
 
-@app.route('/api/mcts', methods = ['GET'])
-def route_mcts():
-    pass 
+    alg_type = request.args.get('alg', default=None)
+    print(alg_type)
+    coord = None 
+
+    if alg_type == 'random':
+        coords = [[i, j] for i in range(len(grid)) for j in range(len(grid[0])) if grid[i][j] == "W"]
+        coord = random.choice(coords)
+        time.sleep(1)
+    elif alg_type == 'minimax':
+        px, py, _ = minimax_alg(grid, 2, True, -math.inf, math.inf)
+        coord = [px, py]
+    
+    return jsonify({
+        'status_code': 200,
+        'pair': coord
+    })
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8080)  
+    app.run(host='0.0.0.0', port=5050, debug=True)
