@@ -77,9 +77,6 @@ class MCTS:
         # computer wins --> 1, player wins -1
 
         # first_action must be saved, rest don't matter
-
-
-         
          
 
 
