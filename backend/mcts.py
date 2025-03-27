@@ -68,7 +68,6 @@ class MCTS:
 
     def run(self):
         for _ in range(self.num_iterations):
-            print(_)
             new_node = self.root_node.select()
             child_node = new_node.expand()
             reward, first_action = self.simulate(child_node)
