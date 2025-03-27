@@ -20,10 +20,10 @@ def count_needed(grid: List[List[str]], color: str):
     else:
         for i in range(len(grid)):
             if grid[i][0] == color:
-                q.appendleft((0, i))
+                q.appendleft((i, 0))
                 dist[i][0] = 0
             else:
-                q.append((0, i))
+                q.append((i, 0))
                 dist[i][0] = 1
 
     def check(x, y):
@@ -61,7 +61,7 @@ def count_needed(grid: List[List[str]], color: str):
     
     return mn
 
-def need_heuristic(grid):
+def need_heuristic(grid,):
     return count_needed(grid, 'R') - count_needed(grid, 'B')
 
 def minimax_alg(grid, depth, player, alpha, beta):
@@ -101,6 +101,5 @@ def minimax_alg(grid, depth, player, alpha, beta):
                 if best <= alpha:
                     return pos_x, pos_y, best
 
-    
     return pos_x, pos_y, best
     

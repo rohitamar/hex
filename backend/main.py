@@ -43,7 +43,6 @@ def route_algo():
     grid = parse_grid_string(grid_string)
 
     alg_type = request.args.get('alg', default=None)
-    print(alg_type)
     coord = None 
 
     if alg_type == 'random':

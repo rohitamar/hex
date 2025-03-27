@@ -33,8 +33,8 @@ class GameEvent {
 
             document.querySelector('.turnTitle').innerHTML = "Computer's turn";
             this.player = false;
-            const [posX, posY] = await this.algo('minimax');
-            this.hexagonGrid.colorOnCenter(this.hexagonGrid.getGridCoord(posX, posY), 'blue');
+            const [posx, posy] = await this.algo('minimax');
+            this.hexagonGrid.colorOnCenter(this.hexagonGrid.getGridCoord(posx, posy), 'blue');
             result = await this.checkIfEndGame();
             if(result != 0) {
                 setTimeout(() => {
@@ -53,6 +53,7 @@ class GameEvent {
         if (!co) {
             throw new Error("Canvas object is null"); 
         }
+
         console.log(e.clientX - co.left, e.clientY - co.top);
         const coord = this.hexagonGrid.findWhichHexagon(e.clientX - co.left, e.clientY - co.top);
 
