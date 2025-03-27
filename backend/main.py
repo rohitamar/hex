@@ -6,6 +6,7 @@ import math
 
 from utils import parse_grid_string, check_endgame
 from minimax import minimax_alg 
+from mcts import MCTS
 
 app = Flask(__name__, static_folder='../frontend') 
 CORS(app)
@@ -52,6 +53,15 @@ def route_algo():
     elif alg_type == 'minimax':
         px, py, _ = minimax_alg(grid, 2, True, -math.inf, math.inf)
         coord = [px, py]
+    elif alg_type == 'mcts':
+        m = MCTS(grid)
+        px, py = m.run()
+        coord = [px, py]
+    else:
+        return jsonify({
+            'status_code': 400,
+            'message': f'{alg_type} is not a supported algorithm. Possible options: random, minimax, mcts'
+        })
     
     return jsonify({
         'status_code': 200,

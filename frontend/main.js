@@ -33,18 +33,21 @@ class GameEvent {
 
             document.querySelector('.turnTitle').innerHTML = "Computer's turn";
             this.player = false;
-            const [posx, posy] = await this.algo('minimax');
+            const [posx, posy] = await this.algo('mcts');
             this.hexagonGrid.colorOnCenter(this.hexagonGrid.getGridCoord(posx, posy), 'blue');
             result = await this.checkIfEndGame();
             if(result != 0) {
                 setTimeout(() => {
-                    alert(`${result.toString()} won!`);
-                    this.hexagonGrid.drawAll('white');
-                    window.location.reload();
+                    if(result == -1) {
+                        alert('You won!');
+                    } else {
+                        alsert('Computer won :(');
+                    }
                 }, 100);    
+            } else {
+                document.querySelector('.turnTitle').innerHTML = "Your turn";
+                this.player = true;
             }
-            document.querySelector('.turnTitle').innerHTML = "Your turn";
-            this.player = true;
         });
     }
 
@@ -53,8 +56,6 @@ class GameEvent {
         if (!co) {
             throw new Error("Canvas object is null"); 
         }
-
-        console.log(e.clientX - co.left, e.clientY - co.top);
         const coord = this.hexagonGrid.findWhichHexagon(e.clientX - co.left, e.clientY - co.top);
 
         if(!coord) {
@@ -111,7 +112,6 @@ function setupCanvasSize() {
         // window.addEventListener('resize', setupCanvasSize);
 
         $(document).ready(() => {
-            console.log('asdasdasd');
             const game = new GameEvent(path, 0.17 * w, 0.08 * h);
         });
     } catch (error) {

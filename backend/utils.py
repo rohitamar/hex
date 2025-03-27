@@ -47,6 +47,6 @@ def check_endgame(grid):
     src_blue = [(i, 0) for i in range(len(grid)) if grid[i][0] == 'B']
     blue = bfs(grid, src_blue, 'B', lambda x, y: y == len(grid[0]) - 1)
     
-    end_state = 0 if not red and not blue else (1 if red else -1)
+    end_state = 0 if not red and not blue else (-1 if red else 1)
 
     return end_state
