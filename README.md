@@ -9,4 +9,4 @@ Things that I could further improve:
 - Cold start issue: MCTS performs poorly in the early game. 
 - Currently using random rollout. Heuristic based rollout might make MCTS more powerful.
 
-![Hex Image](https://github.com/rohitamar/hex/blob/main/img/hexgame.png)
+![Hex Image](https://github.com/rohitamar/hex/blob/main/img/heximage.png)
