@@ -1,7 +1,7 @@
 # Hex with Minimax AI
 
 ## Introduction 
-Web Application (JS, Python) that implements the game of [Hex (or Nash)](https://en.wikipedia.org/wiki/Hex_(board_game)) against an AI. The plan is to build two AIs: one with minimax, second with MCTS. I don't plan on using a policy network; hence, this AI is purely tree and heuristic based search. I also do want to point out that AWS API Gateway seems to enforce a 29s timeout, which makes MCTS with more than 1000 iterations difficult to achieve. Locally, I am running 10,000 iterations. Anyhow, hosting this website was just for a proof-of-concept, so this doesn't matter much. 
+Web Application (JS, Python) that implements the game of [Hex (or Nash)](https://en.wikipedia.org/wiki/Hex_(board_game)) against an AI. The plan is to build two AIs: one with minimax, second with MCTS. I don't plan on using a policy network; hence, this AI is purely tree and heuristic based search. I also do want to point out that AWS API Gateway seems to enforce a 29s timeout, which makes MCTS with more than 300 iterations difficult to achieve. I'm actually not sure why you can only 300 iterations even on a 29s timeout. I ran it locally, and on my PC, you can run ~4000 iterations. Right now, I am thinking that it might because serverless computing probably wasn't a good idea for a intensive recursive algorithm. Even so, this doesn't really matter to me since I was just hosting the website for a proof-of-concept. Locally, I am running 10,000 iterations. 
 
 You (_the human_) go first (red), the computer goes second (blue). You (might) should be able to access the project [here.](https://hex.d1hjg2b0quixy.amplifyapp.com/).
 
