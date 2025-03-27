@@ -15,7 +15,7 @@
       "function": {
         "rohitloveslamfuncs": {
           "deploymentBucketName": "amplify-hex-hex-f0295-deployment",
-          "s3Key": "amplify-builds/rohitloveslamfuncs-4c77686b364f426b5743-build.zip"
+          "s3Key": "amplify-builds/rohitloveslamfuncs-57303241785044646a59-build.zip"
         }
       },
       "api": {

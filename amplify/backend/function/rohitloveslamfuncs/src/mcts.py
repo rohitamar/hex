@@ -64,10 +64,11 @@ class Node:
 class MCTS:
     def __init__(self, grid):
         self.root_node = Node(grid, prev_action=None, parent=None) 
-        self.num_iterations = 10000
+        self.num_iterations = 250
 
     def run(self):
         for _ in range(self.num_iterations):
+            print(_)
             new_node = self.root_node.select()
             child_node = new_node.expand()
             reward, first_action = self.simulate(child_node)
