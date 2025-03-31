@@ -49,7 +49,6 @@ export class HexagonGrid {
             if(i != this.rows - 1) s += ",";
         }
         s += "]";
-        console.log(s);
         return s;
     }
 

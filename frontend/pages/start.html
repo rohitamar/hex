@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hex Game</title>
+    <link rel="stylesheet" href="playstyle.css">
+</head>
+<body>
+
+    <div class="container">
+        <h1>Hex Game</h1>
+        <div id="options-menu">
+            <h2>Choose Your Game Mode:</h2>
+            <button id="btn-mcts" class="option-btn">Play against MCTS AI</button>
+            <button id="btn-minimax" class="option-btn">Play against Minimax AI</button>
+            <button id="btn-friend" class="option-btn">Play with Friend</button>
+        </div>
+
+        <div id="friend-setup" style="display: none;">
+            <h2>Play with Friend</h2>
+            <p>Share this link with your friend. They need to visit this exact URL to join your game:</p>
+            <div class="share-link-container">
+                <code id="share-link">Generating link...</code>
+                <button id="copy-link-btn" title="Copy link to clipboard">Copy</button>
+            </div>
+            <p id="copy-feedback" class="feedback"></p>
+            <p><small>(Once your friend joins using the link, the game will start automatically)</small></p>
+             <button id="back-to-options" class="option-btn small-btn">Back to Menu</button>
+        </div>
+
+    </div>
+
+    <script src="playjs.js"></script>
+</body>
+</html>
