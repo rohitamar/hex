@@ -1,6 +1,5 @@
 "use strict";
 import { HexagonGrid } from './draw.js';
-import { Point } from './Geometry.js';
 
 class GameEvent {
     constructor(path, baseX, baseY, roomId = null) {
@@ -11,7 +10,7 @@ class GameEvent {
         this.player = true;
 
         if(this.roomId != 'mcts' || this.roomId != 'minimax') {
-            this.socket = new WebSocket(`ws://localhost:5050/ws/${roomId}`);
+            this.socket = new WebSocket(`wss://87be-128-6-147-4.ngrok-free.app/ws/${roomId}`);
             this.roomId = roomId;
 
             this.initializeWebSocket();
@@ -24,9 +23,9 @@ class GameEvent {
     initializeWebSocket() {
         if(!this.socket) return;
 
-        this.socket.onopen = (e) => {
-            console.log('Websocket conn');    
-        };
+        // this.socket.onopen = (e) => {
+        //     console.log('Websocket conn');    
+        // };
 
         this.socket.onmessage = (e) => {
             let data = JSON.parse(e.data);
@@ -41,9 +40,10 @@ class GameEvent {
                 this.player = false;
                 this.color = 'blue';
             } else if(data.message == 'testing a message') {
-                var cd = new Point(data.coord.x, data.coord.y);
+                var cd = data.coord;
+                console.log(cd);
                 this.player = !this.player;
-                this.hexagonGrid.colorOnCenter(cd, this.color == 'red' ? 'blue' : 'red');
+                this.hexagonGrid.colorByGrid(cd[0], cd[1], this.color == 'red' ? 'blue' : 'red');
                 document.querySelector('.turnTitle').innerHTML = "Your turn";
             } else {
                 setTimeout(() => {
@@ -134,16 +134,18 @@ class GameEvent {
         if (!co) {
             throw new Error("Canvas object is null"); 
         }
-        const coord = this.hexagonGrid.findWhichHexagon(e.clientX - co.left, e.clientY - co.top);
+        console.log("window: ", window.scrollX, window.scrollY);
+        const coord = this.hexagonGrid.findWhichHexagon(e.clientX - co.left + window.scrollX, e.clientY - co.top + window.scrollY);
         console.log("i think coord: ", coord);
         if(!coord) {
             return false;
         }
+        console.log(this.hexagonGrid.getGridCoordByCenter(coord));
         this.hexagonGrid.colorOnCenter(coord, this.color);
         const gridString = this.hexagonGrid.toString();
 
         this.socket.send(JSON.stringify({
-            coord: coord,
+            coord: this.hexagonGrid.getGridCoordByCenter(coord),
             grid: gridString,
             message: "testing a message"
         }));

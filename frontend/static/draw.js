@@ -74,7 +74,9 @@ export class HexagonGrid {
             const p0 = new Point(a, b);
             const hexagon = {
                 color: 'white',
-                points: [p1, p2, p3, p4, p5, p6]
+                points: [p1, p2, p3, p4, p5, p6],
+                center: p0,
+                gridCoord: [i, j]
             };
             this.centerCoords.push(p0);
             this.hexagons[p0.hash()] = hexagon;
@@ -129,10 +131,21 @@ export class HexagonGrid {
         return null;
     }
     
+    getGridCoordByCenter(center) {
+        return this.hexagons[center.hash()].gridCoord;
+    }
+
     colorOnCenter(coord, color) {
         const hexagon = this.hexagons[coord.hash()];
         hexagon.color = color;
         this.drawHexagon(coord.x, coord.y, this.len, hexagon.color);
+    }
+
+    colorByGrid(ci, cj, color) {
+        const h = this.grid[ci][cj];
+        h.color = color;
+        console.log(h);
+        this.colorOnCenter(h, color);
     }
 
     getGrid() {
